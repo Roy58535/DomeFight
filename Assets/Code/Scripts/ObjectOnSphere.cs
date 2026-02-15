@@ -16,9 +16,13 @@ public class ObjectOnSphere : MonoBehaviour
 
     protected Rigidbody Rig;
 
-    private Vector3 _azimuthDir;
-    private Vector3 _radialDir;
-    private Vector3 _surfaceDownDir;
+    private Material material;
+
+    [SerializeField] private Vector3 _azimuthDir;
+    [SerializeField] private Vector3 _radialDir;
+    [SerializeField] private Vector3 _surfaceDownDir;
+
+    private MeshFilter meshFilter;
 
     protected virtual void Start()
     {
@@ -27,14 +31,44 @@ public class ObjectOnSphere : MonoBehaviour
         _sphericalCoord = SphericalCoordinatesUtils.CartesianToSpherical(transform.position);
         transform.position = SphericalCoordinatesUtils.SphericalToCartesian(_sphericalCoord);
         Rig = GetComponent<Rigidbody>();
+        meshFilter = GetComponent<MeshFilter>();
     }
 
     protected virtual void Update()
     {
         // Constrain position and orientation
-        transform.forward = transform.position;
+        if (meshFilter.sharedMesh.name == "Plane")
+        {
+            transform.rotation = Quaternion.LookRotation(_azimuthDir, -_radialDir);
+        }
+        else
+        {
+            transform.rotation = Quaternion.LookRotation(_azimuthDir, -_surfaceDownDir);
+        }
+
         ConstrainToSphere();
         _sphericalCoord = SphericalCoordinatesUtils.CartesianToSpherical(transform.position);
+
+        // Pass position to shader
+        while (material == null)
+        {
+            Renderer renderer = GetComponent<Renderer>();
+            if (renderer != null)
+            {
+                material = renderer.material;
+            }
+            else
+            {
+                Debug.LogWarning("No Renderer found for ObjectOnSphere. Shader position will not be updated.");
+                break;
+            }
+        }
+
+        material.SetVector("_objectPosition", transform.position);
+        material.SetVector("_surfaceTangent", _azimuthDir);
+        material.SetVector("_surfaceBitangent", -_surfaceDownDir);
+        material.SetFloat("_objectTheta", _sphericalCoord.y);
+        material.SetFloat("_objectPhi", _sphericalCoord.z);
     }
 
     protected virtual void FixedUpdate()

@@ -9,8 +9,8 @@ public static class SphericalCoordinatesUtils
         if (sphericalInput != null)
         {
             float x = sphericalInput.x * Mathf.Cos(sphericalInput.y) * Mathf.Sin(sphericalInput.z);
-            float z = sphericalInput.x * Mathf.Sin(sphericalInput.y) * Mathf.Sin(sphericalInput.z);
             float y = sphericalInput.x * Mathf.Cos(sphericalInput.z);
+            float z = sphericalInput.x * Mathf.Sin(sphericalInput.y) * Mathf.Sin(sphericalInput.z);
             Vector3 cartesian = new Vector3(x, y, z);
             return cartesian;
         }
