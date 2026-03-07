@@ -9,12 +9,15 @@ public class ObjectOnSphere : MonoBehaviour
 
     [SerializeField] private bool _useGravity = false;
     [SerializeField] private Vector3 _sphericalCoord;
+    [SerializeField] private Vector3 _initialCoord;
+    [SerializeField] private bool _useInitialCoord = false;
     protected Vector3 SphericalCoord => _sphericalCoord;
     protected Vector3 AzimuthDir => _azimuthDir;
     protected Vector3 RadialDir => _radialDir;
     protected Vector3 SurfaceDownDir => _surfaceDownDir;
 
-    protected Rigidbody Rig;
+    private Rigidbody _rig;
+    protected Rigidbody Rig => _rig;
 
     private Vector3 _azimuthDir;
     private Vector3 _radialDir;
@@ -22,11 +25,19 @@ public class ObjectOnSphere : MonoBehaviour
 
     protected virtual void Start()
     {
-        // Initialize on sphere surface
-        ConstrainToSphere();
-        _sphericalCoord = SphericalCoordinatesUtils.CartesianToSpherical(transform.position);
-        transform.position = SphericalCoordinatesUtils.SphericalToCartesian(_sphericalCoord);
-        Rig = GetComponent<Rigidbody>();
+        if (_useInitialCoord)
+        {
+            transform.position = SphericalCoordinatesUtils.SphericalToCartesian(_initialCoord);
+            ConstrainToSphere();
+            _sphericalCoord = _initialCoord;
+        }
+        else {
+            // Initialize on sphere surface
+            ConstrainToSphere();
+            _sphericalCoord = SphericalCoordinatesUtils.CartesianToSpherical(transform.position);
+            transform.position = SphericalCoordinatesUtils.SphericalToCartesian(_sphericalCoord);
+        }
+        _rig = GetComponent<Rigidbody>();
     }
 
     protected virtual void Update()
