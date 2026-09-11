@@ -9,12 +9,14 @@ public class Bullet : MonoBehaviour
     private ObjectOnSphere _objectOnSphere;
     private Collider _collider;
 
-    private void Start()
+    private void Awake()
     {
         _objectOnSphere = GetComponent<ObjectOnSphere>();
+        print(_objectOnSphere);
         _trailRenderer = GetComponent<TrailRenderer>();
         _collider = GetComponent<Collider>();
     }
+
     
 
     private void OnTriggerEnter(Collider other)
@@ -32,6 +34,14 @@ public class Bullet : MonoBehaviour
             Invoke("Deactivate", _trailRenderer.time);
             //Destroy(gameObject, _trailRenderer.time);
         }
+
+        if (other.CompareTag("Environment"))
+        {
+            _trailRenderer.emitting = false;
+            _collider.enabled = false;
+            Invoke("Deactivate", _trailRenderer.time);
+            //Destroy(gameObject, _trailRenderer.time);
+        }
     }
 
     private void Deactivate()
@@ -39,9 +49,10 @@ public class Bullet : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void Initialize(int damage, int velocity, Vector3 direction)
+    public void Initialize(int damage, float velocity, Vector3 direction)
     {
         this.damage = damage;
+        _objectOnSphere.SetVelocity(direction * velocity);
     }
 
 }

@@ -11,10 +11,10 @@ public class ObjectOnSphere : MonoBehaviour
     [SerializeField] private Vector3 _sphericalCoord;
     [SerializeField] private Vector3 _initialCoord;
     [SerializeField] private bool _useInitialCoord = false;
-    protected Vector3 SphericalCoord => _sphericalCoord;
-    protected Vector3 AzimuthDir => _azimuthDir;
-    protected Vector3 RadialDir => _radialDir;
-    protected Vector3 SurfaceDownDir => _surfaceDownDir;
+    public Vector3 SphericalCoord => _sphericalCoord;
+    public Vector3 AzimuthDir => _azimuthDir;
+    public Vector3 RadialDir => _radialDir;
+    public Vector3 SurfaceDownDir => _surfaceDownDir;
 
     private Rigidbody _rig;
     protected Rigidbody Rig => _rig;
@@ -23,7 +23,7 @@ public class ObjectOnSphere : MonoBehaviour
     private Vector3 _radialDir;
     private Vector3 _surfaceDownDir;
 
-    protected virtual void Start()
+    protected virtual void Awake()
     {
         _rig = GetComponent<Rigidbody>();
         if (_useInitialCoord)
@@ -52,6 +52,8 @@ public class ObjectOnSphere : MonoBehaviour
     {
         ConstrainToSphere();
         _sphericalCoord = SphericalCoordinatesUtils.CartesianToSpherical(transform.position);
+        // Constrain velocity as well as position before applying surface forces.
+        Rig.velocity = Vector3.ProjectOnPlane(Rig.velocity, Rig.position.normalized);
         // Compute radial, azimuthal and surfacedown directions
         _azimuthDir = new Vector3(-Mathf.Sin(_sphericalCoord.y), 0, Mathf.Cos(_sphericalCoord.y)).normalized;
         _radialDir = transform.position.normalized;
@@ -74,5 +76,10 @@ public class ObjectOnSphere : MonoBehaviour
     {
         Vector3 dir = transform.position.normalized;
         Rig.MovePosition(dir * Radius);
+    }
+
+    public void SetVelocity(Vector3 velocity)
+    {
+        Rig.AddForce(velocity, ForceMode.VelocityChange);
     }
 }

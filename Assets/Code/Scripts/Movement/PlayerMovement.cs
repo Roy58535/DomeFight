@@ -16,9 +16,9 @@ public class PlayerMovement : ObjectOnSphere
     private float _jumpTimer = 0;
     
 
-    protected override void Start()
+    protected override void Awake()
     {
-        base.Start();
+        base.Awake();
         _capsuleCollider = GetComponent<CapsuleCollider>();
 
     }
