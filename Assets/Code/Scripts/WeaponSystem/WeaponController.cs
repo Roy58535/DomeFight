@@ -8,7 +8,7 @@ public class WeaponController : MonoBehaviour
     [SerializeField] private int _currWeaponIdx;
     [SerializeField] private int _defaultWeaponIdx;
     private ObjectOnSphere _objectOnSphere;
-    [SerializeField] private float _shootingAngle;
+    [SerializeField] private float _shootingAngle = 1.0f;
 
     private void Start()
     {
