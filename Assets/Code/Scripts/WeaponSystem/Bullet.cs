@@ -1,34 +1,37 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+[RequireComponent(typeof(ObjectOnSphere))]
+[RequireComponent(typeof(TrailRenderer))]
+[RequireComponent(typeof(SphereCollider))]
+[RequireComponent(typeof(Rigidbody))]
 
 public class Bullet : MonoBehaviour
 {
-    private int damage;
+    private int _damage;
     private TrailRenderer _trailRenderer;
     private ObjectOnSphere _objectOnSphere;
-    private Collider _collider;
     private SphereCollider _sphereCollider;
     private Vector3 _previousCenter;
-    private bool _sweepInitialized;
+    private bool _initialized;
+    private ObjectPool _bulletPool;
 
     private void Awake()
     {
         _objectOnSphere = GetComponent<ObjectOnSphere>();
         _trailRenderer = GetComponent<TrailRenderer>();
-        _collider = GetComponent<Collider>();
         _sphereCollider = GetComponent<SphereCollider>();
     }
 
-    private void Start()
-    {
-        Initialize(0, 0f, Vector3.zero);
-    }
+    //private void Start()
+    //{
+    //    Initialize(null, null, 0f, Vector3.zero, 0);
+    //}
 
     private void FixedUpdate()
     {
         // Sweep test for environment collision
-        if (!_sweepInitialized || !_collider.enabled || _sphereCollider == null)
+        if (!_initialized)
             return;
 
         Vector3 currentCenter = transform.position;
@@ -45,9 +48,9 @@ public class Bullet : MonoBehaviour
                          displacement / distance, distance, Physics.AllLayers, QueryTriggerInteraction.Collide))
             {
                 Collider other = hit.collider;
-                if (other == _collider ||
+                if (other == _sphereCollider ||
                     Physics.GetIgnoreLayerCollision(gameObject.layer, other.gameObject.layer) ||
-                    Physics.GetIgnoreCollision(_collider, other))
+                    Physics.GetIgnoreCollision(_sphereCollider, other))
                     continue;
                 if (!foundHit || hit.distance < nearestHit.distance)
                 {
@@ -72,34 +75,38 @@ public class Bullet : MonoBehaviour
             EntityInfo entityInfo = other.GetComponent<EntityInfo>();
             if (entityInfo != null)
             {
-                entityInfo.TakeDamage(damage);
+                entityInfo.TakeDamage(_damage);
             }
         }
-        gameObject.SetActive(false);
+
+        _objectOnSphere.SetVelocity(Vector3.zero);
         _trailRenderer.emitting = false;
-        _collider.enabled = false;
-        //Invoke("Deactivate", _trailRenderer.time);
+        _sphereCollider.enabled = false;
+        _bulletPool.Return(gameObject);
     }
 
     private void Deactivate()
     {
-        gameObject.SetActive(false);
+        
     }
 
-    public void Initialize(int damage, float velocity, Vector3 direction)
+    public void Initialize(ObjectPool bulletPool, Transform firePoint, float velocity, Vector3 direction, int damage)
     {
-        this.damage = damage;
+        transform.position = firePoint.position;
+        transform.rotation = firePoint.rotation;
+        _damage = damage;
+        _bulletPool = bulletPool;
         _objectOnSphere.SetVelocity(direction * velocity);
-        if (_sphereCollider != null)
-        {
-            _previousCenter = transform.position;
-            _sweepInitialized = true;
-        }
+        _previousCenter = transform.position;
+        _trailRenderer.Clear();
+        _trailRenderer.emitting = true;
+        _sphereCollider.enabled = true;
+        _initialized = true;
     }
 
     private void OnDisable()
     {
-        _sweepInitialized = false;
+        _initialized = false;
     }
 
 }

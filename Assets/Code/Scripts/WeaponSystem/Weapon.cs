@@ -34,9 +34,7 @@ public class Weapon : MonoBehaviour
             Bullet bulletComponent = bullet.GetComponent<Bullet>();
             if (bulletComponent != null)
             {
-                bullet.transform.position = _firePoint.position;
-                bullet.transform.rotation = _firePoint.rotation;
-                bulletComponent.Initialize(Damage, BulletSpeed, dir);
+                bulletComponent.Initialize(_bulletPool, _firePoint, BulletSpeed, dir, Damage);
             }
             
             

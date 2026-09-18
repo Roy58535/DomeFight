@@ -80,6 +80,6 @@ public class ObjectOnSphere : MonoBehaviour
 
     public void SetVelocity(Vector3 velocity)
     {
-        Rig.AddForce(velocity, ForceMode.VelocityChange);
+        Rig.velocity = Vector3.ProjectOnPlane(velocity, _radialDir);
     }
 }
