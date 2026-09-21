@@ -5,22 +5,19 @@ using UnityEngine;
 public class ObjectPool : MonoBehaviour
 {
     public GameObject Prefab;
-    [SerializeField] private Queue<GameObject> _pool = new Queue<GameObject>();
+    private Queue<GameObject> _pool = new Queue<GameObject>();
 
     public GameObject Get()
     {
         if (_pool.Count > 0)
         {
-            print("Before dequeue :" + _pool.Count);
             GameObject obj = _pool.Dequeue();
-            print("After dequeue :" + _pool.Count);
             obj.SetActive(true);
             return obj;
         }
         else
         {
             GameObject newObject = Instantiate(Prefab);
-            //_pool.Enqueue(newObject);
             return newObject;
         }
     }
@@ -41,10 +38,5 @@ public class ObjectPool : MonoBehaviour
         
         obj.SetActive(false);
         _pool.Enqueue(obj);
-    }
-
-    private void Update()
-    {
-        
     }
 }

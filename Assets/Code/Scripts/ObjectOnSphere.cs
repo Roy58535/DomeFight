@@ -52,8 +52,7 @@ public class ObjectOnSphere : MonoBehaviour
     {
         ConstrainToSphere();
         _sphericalCoord = SphericalCoordinatesUtils.CartesianToSpherical(transform.position);
-        // Constrain velocity as well as position before applying surface forces.
-        Rig.velocity = Vector3.ProjectOnPlane(Rig.velocity, Rig.position.normalized);
+        
         // Compute radial, azimuthal and surfacedown directions
         _azimuthDir = new Vector3(-Mathf.Sin(_sphericalCoord.y), 0, Mathf.Cos(_sphericalCoord.y)).normalized;
         _radialDir = transform.position.normalized;
@@ -76,10 +75,13 @@ public class ObjectOnSphere : MonoBehaviour
     {
         Vector3 dir = transform.position.normalized;
         Rig.MovePosition(dir * Radius);
+        // Constrain velocity as well as position before applying surface forces.
+        Rig.velocity = Vector3.ProjectOnPlane(Rig.velocity, Rig.position.normalized);
     }
 
     public void SetVelocity(Vector3 velocity)
     {
-        Rig.velocity = Vector3.ProjectOnPlane(velocity, _radialDir);
+        Rig.angularVelocity = Vector3.zero;
+        Rig.velocity = Vector3.ProjectOnPlane(velocity, transform.position.normalized);
     }
 }
