@@ -1,7 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class ObjectOnSphere : MonoBehaviour
 {
     public static float GravityStrength = 9f;
@@ -26,31 +25,32 @@ public class ObjectOnSphere : MonoBehaviour
     protected virtual void Awake()
     {
         _rig = GetComponent<Rigidbody>();
+
+        // Calculate initial spherical coordinates based on the initial position or use the provided initial coordinates
         if (_useInitialCoord)
         {
-            transform.position = SphericalCoordinatesUtils.SphericalToCartesian(_initialCoord);
-            ConstrainToSphere();
             _sphericalCoord = _initialCoord;
         }
-        else {
-            // Initialize on sphere surface
-            ConstrainToSphere();
+        else
+        {
             _sphericalCoord = SphericalCoordinatesUtils.CartesianToSpherical(transform.position);
-            transform.position = SphericalCoordinatesUtils.SphericalToCartesian(_sphericalCoord);
         }
-        
+
+        // Set the initial position based on the spherical coordinates
+        SetSphericalPosition(_sphericalCoord);
     }
 
     protected virtual void Update()
     {
-        // Constrain position and orientation
+        // Constrain orientation
         transform.forward = transform.position;
-        
     }
 
     protected virtual void FixedUpdate()
     {
+        // Constrain position and velocity to sphere
         ConstrainToSphere();
+        // Update spherical coordinates based on the current position
         _sphericalCoord = SphericalCoordinatesUtils.CartesianToSpherical(transform.position);
         
         // Compute radial, azimuthal and surfacedown directions
@@ -73,14 +73,24 @@ public class ObjectOnSphere : MonoBehaviour
     
     protected void ConstrainToSphere()
     {
+        // Constrain position to sphere
         Vector3 dir = transform.position.normalized;
-        Rig.MovePosition(dir * Radius);
-        // Constrain velocity as well as position before applying surface forces.
+        transform.position = dir * Radius;
+        // Constrain velocity to sphere
         Rig.velocity = Vector3.ProjectOnPlane(Rig.velocity, Rig.position.normalized);
+    }
+
+    public void SetSphericalPosition(Vector3 sphericalCoord)
+    {
+        // Set the position based on spherical coordinates
+        _sphericalCoord = sphericalCoord;
+        transform.position = SphericalCoordinatesUtils.SphericalToCartesian(_sphericalCoord);
+        ConstrainToSphere();
     }
 
     public void SetVelocity(Vector3 velocity)
     {
+        // Set the velocity while constraining it to the sphere, reset angular velocity to zero
         Rig.angularVelocity = Vector3.zero;
         Rig.velocity = Vector3.ProjectOnPlane(velocity, transform.position.normalized);
     }

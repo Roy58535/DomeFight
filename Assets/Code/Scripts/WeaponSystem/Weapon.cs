@@ -1,6 +1,4 @@
-using Unity.Properties;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class Weapon : MonoBehaviour
 {
@@ -20,6 +18,7 @@ public class Weapon : MonoBehaviour
 
     private void Update()
     {
+        // Update firing state based on ammo, reload status, and fire rate
         CanFire = !_isReloading && CurrentAmmo > 0 && Time.time - _lastFireTime >= 1 / FireRate;
     }
 
@@ -30,14 +29,13 @@ public class Weapon : MonoBehaviour
             CurrentAmmo--;
             _lastFireTime = Time.time;
 
+            // Get a bullet from the pool and initialize it
             GameObject bullet = _bulletPool.Get();
             Bullet bulletComponent = bullet.GetComponent<Bullet>();
             if (bulletComponent != null)
             {
                 bulletComponent.Initialize(_bulletPool, _firePoint, BulletSpeed, dir, Damage);
             }
-            
-            
         }
     }
 }

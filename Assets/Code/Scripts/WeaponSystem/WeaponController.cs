@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,12 +6,14 @@ public class WeaponController : MonoBehaviour
     [SerializeField] private List<Weapon> _weapons;
     [SerializeField] private int _currWeaponIdx;
     [SerializeField] private int _defaultWeaponIdx;
-    private ObjectOnSphere _objectOnSphere;
     [SerializeField] private float _shootingAngle = 1.0f;
+
+    private ObjectOnSphere _objectOnSphere;
 
     private void Start()
     {
         _objectOnSphere = GetComponent<PlayerMovement>();
+        // Switch to default weapon at start
         SwitchToWeapon(_defaultWeaponIdx);
     }
 
@@ -25,7 +26,7 @@ public class WeaponController : MonoBehaviour
                 Weapon weapon = _weapons[_currWeaponIdx];
                 if (weapon != null)
                 {
-
+                    // Calculate the firing direction based on the shooting angle
                     Vector3 fireDir = Mathf.Cos(_shootingAngle) * _objectOnSphere.AzimuthDir + Mathf.Sin(_shootingAngle) * -_objectOnSphere.SurfaceDownDir;
                     weapon.Fire(fireDir);
                 }
@@ -48,6 +49,7 @@ public class WeaponController : MonoBehaviour
 
     private void SwitchToWeapon(int index)
     {
+        // Switch to the weapon at the specified index
         if (index >= 0 && index < _weapons.Count)
         {
             _currWeaponIdx = index;

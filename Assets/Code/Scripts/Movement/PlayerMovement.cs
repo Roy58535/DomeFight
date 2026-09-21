@@ -20,7 +20,6 @@ public class PlayerMovement : ObjectOnSphere
     {
         base.Awake();
         _capsuleCollider = GetComponent<CapsuleCollider>();
-
     }
 
     protected override void Update()
@@ -56,6 +55,7 @@ public class PlayerMovement : ObjectOnSphere
     {
         base.FixedUpdate();
         ApplyHorizontalMovement();
+
         //Apply jump force
         if (_jumpPending)
         {
@@ -66,13 +66,13 @@ public class PlayerMovement : ObjectOnSphere
 
     private void ApplyHorizontalMovement()
     {
-
         //Apply horizontal movement
         Vector3 tangentialMovement = Vector3.Project(Rig.velocity, SurfaceDownDir);
         Vector3 currentAzimuthalVel = Vector3.Project(Rig.velocity, AzimuthDir);
         Vector3 azimuthalMovement = -AzimuthDir * _hmove;
         Vector3 velocityDiff = Vector3.zero;
 
+        // Apply different friction based on whether the player is grounded or in the air
         if (_isGrounded)
         {
             if (Mathf.Abs(_hmove) > 0.01f)
