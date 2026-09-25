@@ -32,7 +32,6 @@ public class PlayerMovement : ObjectOnSphere
 
         //Input handling
         _hmove = Input.GetAxisRaw("Horizontal") * _speed;
-        print(_hmove);
 
         //Ground check
         Vector3 checkingPosition = transform.position + SurfaceDownDir * _capsuleCollider.height * transform.localScale.y / 2;

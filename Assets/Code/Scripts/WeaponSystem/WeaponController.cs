@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class WeaponController : MonoBehaviour
 {
     [SerializeField] private List<Weapon> _weapons;
     [SerializeField] private int _currWeaponIdx;
     [SerializeField] private int _defaultWeaponIdx;
-    [SerializeField] private float _shootingAngle = 1.0f;
-
+    
+    private float _shootingAngle;
     private ObjectOnSphere _objectOnSphere;
 
     private void Start()
@@ -19,15 +20,24 @@ public class WeaponController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        Gamepad gamepad = Gamepad.current;
+        float rt = gamepad.rightTrigger.ReadValue();
+        Vector2 rightStick = gamepad.rightStick.ReadValue();
+        Vector2 leftStick = gamepad.leftStick.ReadValue();
+        rightStick.Normalize();
+        leftStick.Normalize();
+
+        _shootingAngle = Mathf.Atan2(rightStick.y, rightStick.x);
+
+        if (rt > 0.5f)
         {
             if (_weapons != null && _weapons.Count > 0)
             {
                 Weapon weapon = _weapons[_currWeaponIdx];
                 if (weapon != null)
                 {
-                    // Calculate the firing direction based on the shooting angle
-                    Vector3 fireDir = Mathf.Cos(_shootingAngle) * _objectOnSphere.AzimuthDir + Mathf.Sin(_shootingAngle) * -_objectOnSphere.SurfaceDownDir;
+                    // Calculate the firing direction based on right stick angle
+                    Vector3 fireDir = -rightStick.x * _objectOnSphere.AzimuthDir + rightStick.y * -_objectOnSphere.SurfaceDownDir;
                     weapon.Fire(fireDir);
                 }
             }
