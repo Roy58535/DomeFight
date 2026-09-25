@@ -1,11 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public static class SphericalCoordinatesUtils
 {
     public static Vector3 SphericalToCartesian(Vector3 sphericalInput)
     {
+        // Spherical coordinates are represented as (radius, azimuth, polar)
         if (sphericalInput != null)
         {
             float x = sphericalInput.x * Mathf.Cos(sphericalInput.y) * Mathf.Sin(sphericalInput.z);
@@ -19,6 +18,7 @@ public static class SphericalCoordinatesUtils
 
     public static Vector3 CartesianToSpherical(Vector3 cartesianInput)
     {
+        // Spherical coordinates are represented as (radius, azimuth, polar)
         if (cartesianInput != null)
         {
             float radius = Mathf.Sqrt(cartesianInput.x * cartesianInput.x + cartesianInput.y * cartesianInput.y + cartesianInput.z * cartesianInput.z);
