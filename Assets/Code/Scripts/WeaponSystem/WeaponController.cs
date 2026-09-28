@@ -21,6 +21,12 @@ public class WeaponController : MonoBehaviour
     private void Update()
     {
         Gamepad gamepad = Gamepad.current;
+        if (gamepad == null)
+        {
+            print("No gamepad connected");
+            return;
+        }
+
         float rt = gamepad.rightTrigger.ReadValue();
         Vector2 rightStick = gamepad.rightStick.ReadValue();
         Vector2 leftStick = gamepad.leftStick.ReadValue();

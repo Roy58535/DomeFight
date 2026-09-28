@@ -236,38 +236,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 53591453}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &56449949
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 56449950}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &56449950
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 56449949}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 91214503}
-  m_Father: {fileID: 1755695167}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &91214502
 GameObject:
   m_ObjectHideFlags: 0
@@ -299,7 +267,7 @@ Transform:
   m_Children:
   - {fileID: 1889927979}
   - {fileID: 990044834}
-  m_Father: {fileID: 56449950}
+  m_Father: {fileID: 1755695167}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &147786311
 GameObject:
@@ -325,7 +293,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 147786311}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0.7071068, y: 0.7071068, z: -0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -334,7 +302,7 @@ Transform:
   - {fileID: 1077695566}
   - {fileID: 339144310}
   m_Father: {fileID: 293352736}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: -90}
 --- !u!1 &293352733
 GameObject:
   m_ObjectHideFlags: 0
@@ -349,6 +317,7 @@ GameObject:
   - component: {fileID: 293352734}
   - component: {fileID: 293352738}
   - component: {fileID: 293352739}
+  - component: {fileID: 293352740}
   m_Layer: 0
   m_Name: Player
   m_TagString: Entity
@@ -408,15 +377,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 293352733}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 10, z: 0}
+  m_LocalRotation: {x: -0, y: 0.47579154, z: -0, w: 0.87955815}
+  m_LocalPosition: {x: 0.423, y: 10, z: 0.393}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1755695167}
   - {fileID: 147786312}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 56.822, z: 0}
 --- !u!54 &293352737
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -462,7 +431,6 @@ MonoBehaviour:
   - {fileID: 339144309}
   _currWeaponIdx: 0
   _defaultWeaponIdx: 0
-  _shootingAngle: 1.3
 --- !u!114 &293352739
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -475,6 +443,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36aebc49eaab9ed43af57b2b7ca8f0a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &293352740
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 293352733}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7b63753621fa8441b1d2d319c765d1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _eyeTransform: {fileID: 91214503}
+  _bodyTransform: {fileID: 1755695167}
+  _weaponAnchorTransform: {fileID: 147786312}
+  _eyeRotationRadius: 0.15
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -1089,7 +1073,7 @@ MonoBehaviour:
   Damage: 0
   CurrentAmmo: 100
   MaxAmmo: 100
-  BulletSpeed: 10
+  BulletSpeed: 50
   BulletSize: 0
   FireRate: 4
   CanFire: 0
@@ -2086,7 +2070,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1993951780}
-  - {fileID: 56449950}
+  - {fileID: 91214503}
   m_Father: {fileID: 293352736}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1771416756
