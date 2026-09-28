@@ -107,4 +107,10 @@ public class Bullet : MonoBehaviour
         _initialized = false;
     }
 
+    private void OnEnable()
+    {
+        _trailRenderer.emitting = false;
+        _trailRenderer.Clear();
+    }
+
 }
