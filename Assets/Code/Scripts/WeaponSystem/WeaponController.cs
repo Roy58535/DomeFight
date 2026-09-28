@@ -21,15 +21,17 @@ public class WeaponController : MonoBehaviour
     private void Update()
     {
         Gamepad gamepad = Gamepad.current;
-        if (gamepad == null)
+        float rt = 0f;
+        Vector2 rightStick = Vector2.zero;
+        Vector2 leftStick = Vector2.zero;
+
+        if (gamepad != null)
         {
-            print("No gamepad connected");
-            return;
+            rt = gamepad.rightTrigger.ReadValue();
+            rightStick = gamepad.rightStick.ReadValue();
+            leftStick = gamepad.leftStick.ReadValue();
         }
 
-        float rt = gamepad.rightTrigger.ReadValue();
-        Vector2 rightStick = gamepad.rightStick.ReadValue();
-        Vector2 leftStick = gamepad.leftStick.ReadValue();
         rightStick.Normalize();
         leftStick.Normalize();
 
@@ -49,17 +51,14 @@ public class WeaponController : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        // Cycle weapons with Right Bumper (RB)
+        if (gamepad != null && gamepad.rightShoulder.wasPressedThisFrame)
         {
-            SwitchToWeapon(0);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            SwitchToWeapon(1);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            SwitchToWeapon(2);
+            if (_weapons != null && _weapons.Count > 0)
+            {
+                int nextIndex = (_currWeaponIdx + 1) % _weapons.Count;
+                SwitchToWeapon(nextIndex);
+            }
         }
     }
 

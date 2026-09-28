@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(CapsuleCollider))]
 public class PlayerMovement : ObjectOnSphere
@@ -8,13 +9,13 @@ public class PlayerMovement : ObjectOnSphere
     [SerializeField] private float _groundFriction = 0.9f;
     [SerializeField] private float _airControl = 0.5f;
     [SerializeField] private float _airFriction = 0.5f;
+    [SerializeField] private float _stickDeadzone = 0.15f;
 
     private CapsuleCollider _capsuleCollider;
     private float _hmove;
     private bool _jumpPending = false;
     private bool _isGrounded = false;
     private float _jumpTimer = 0;
-    
 
     protected override void Awake()
     {
@@ -30,19 +31,30 @@ public class PlayerMovement : ObjectOnSphere
             _jumpTimer -= Time.deltaTime;
         }
 
-        //Input handling
-        _hmove = Input.GetAxisRaw("Horizontal") * _speed;
+        // Read gamepad once and reuse
+        Gamepad gamepad = Gamepad.current;
 
-        //Ground check
+        Vector2 leftStick = Vector2.zero;
+        if (gamepad != null)
+        {
+            leftStick = gamepad.leftStick.ReadValue();
+        }
+
+        // Apply deadzone and speed
+        float horiz = Mathf.Abs(leftStick.x) > _stickDeadzone ? leftStick.x : 0f;
+        _hmove = horiz * _speed;
+
+        // Ground check
         Vector3 checkingPosition = transform.position + SurfaceDownDir * _capsuleCollider.height * transform.localScale.y / 2;
         _isGrounded = Physics.Raycast(checkingPosition, SurfaceDownDir, 0.1f, LayerMask.GetMask("Ground"));
         Debug.DrawRay(checkingPosition, SurfaceDownDir * 0.1f, _isGrounded ? Color.green : Color.red);
 
         // Jump input
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (gamepad != null && gamepad.buttonSouth.wasPressedThisFrame)
         {
             _jumpTimer = 0.15f;
         }
+
         if (_isGrounded && _jumpTimer > 0)
         {
             _jumpPending = true;
@@ -55,7 +67,7 @@ public class PlayerMovement : ObjectOnSphere
         base.FixedUpdate();
         ApplyHorizontalMovement();
 
-        //Apply jump force
+        // Apply jump force
         if (_jumpPending)
         {
             Rig.AddForce(-SurfaceDownDir * _jumpForce, ForceMode.VelocityChange);
@@ -65,7 +77,7 @@ public class PlayerMovement : ObjectOnSphere
 
     private void ApplyHorizontalMovement()
     {
-        //Apply horizontal movement
+        // Apply horizontal movement
         Vector3 tangentialMovement = Vector3.Project(Rig.velocity, SurfaceDownDir);
         Vector3 currentAzimuthalVel = Vector3.Project(Rig.velocity, AzimuthDir);
         Vector3 azimuthalMovement = -AzimuthDir * _hmove;
