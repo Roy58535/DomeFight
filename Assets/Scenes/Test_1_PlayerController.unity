@@ -432,6 +432,7 @@ MonoBehaviour:
   - {fileID: 339144309}
   _currWeaponIdx: 0
   _defaultWeaponIdx: 0
+  _aimController: {fileID: 293352740}
 --- !u!114 &293352739
 MonoBehaviour:
   m_ObjectHideFlags: 0

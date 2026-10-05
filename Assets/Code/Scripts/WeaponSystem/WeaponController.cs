@@ -7,7 +7,8 @@ public class WeaponController : MonoBehaviour
     [SerializeField] private List<Weapon> _weapons;
     [SerializeField] private int _currWeaponIdx;
     [SerializeField] private int _defaultWeaponIdx;
-    
+    [SerializeField] private AimController _aimController;
+
     private float _shootingAngle;
     private ObjectOnSphere _objectOnSphere;
 
@@ -46,13 +47,13 @@ public class WeaponController : MonoBehaviour
                 {
                     // Calculate the firing direction based on right stick angle
                     Vector3 fireDir = -rightStick.x * _objectOnSphere.AzimuthDir + rightStick.y * -_objectOnSphere.SurfaceDownDir;
-                    weapon.Fire(fireDir);
+                    weapon.Fire(_aimController.AimDirection);
                 }
             }
         }
 
-        // Cycle weapons with Right Bumper (RB)
-        if (gamepad != null && gamepad.rightShoulder.wasPressedThisFrame)
+        // Cycle weapons with Left Bumper (LB)
+        if (gamepad != null && gamepad.leftShoulder.wasPressedThisFrame)
         {
             if (_weapons != null && _weapons.Count > 0)
             {
