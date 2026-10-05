@@ -346,6 +346,7 @@ MonoBehaviour:
   _groundFriction: 0.9
   _airControl: 0.5
   _airFriction: 0.1
+  _stickDeadzone: 0.15
 --- !u!136 &293352735
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1075,7 +1076,7 @@ MonoBehaviour:
   MaxAmmo: 100
   BulletSpeed: 50
   BulletSize: 0
-  FireRate: 4
+  FireRate: 10
   CanFire: 0
   _firePoint: {fileID: 12047273}
   _bulletPool: {fileID: 1037018397}

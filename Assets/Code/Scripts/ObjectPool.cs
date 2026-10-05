@@ -8,7 +8,7 @@ public class ObjectPool : MonoBehaviour
 
     public GameObject Get()
     {
-        if (_pool.Count > 0)
+        if (_pool.Count > 5)
         {
             // Dequeue an object from the pool and activate it
             GameObject obj = _pool.Dequeue();

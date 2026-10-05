@@ -1,9 +1,9 @@
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(ObjectOnSphere))]
 [RequireComponent(typeof(TrailRenderer))]
 [RequireComponent(typeof(SphereCollider))]
-
 public class Bullet : MonoBehaviour
 {
     private int _damage;
@@ -13,12 +13,43 @@ public class Bullet : MonoBehaviour
     private Vector3 _previousCenter;
     private bool _initialized;
     private ObjectPool _bulletPool;
+    private Coroutine _trailStartCoroutine;
 
     private void Awake()
     {
         _objectOnSphere = GetComponent<ObjectOnSphere>();
         _trailRenderer = GetComponent<TrailRenderer>();
         _sphereCollider = GetComponent<SphereCollider>();
+    }
+
+    // Ensure the trail is cleared and not emitting as soon as the object is activated.
+    private void OnEnable()
+    {
+        if (_trailRenderer != null)
+        {
+            _trailRenderer.Clear();
+            _trailRenderer.emitting = false;
+        }
+
+        _initialized = false;
+    }
+
+    // Also clear / stop emitting on disable and cancel any pending coroutine.
+    private void OnDisable()
+    {
+        _initialized = false;
+
+        if (_trailRenderer != null)
+        {
+            _trailRenderer.emitting = false;
+            _trailRenderer.Clear();
+        }
+
+        if (_trailStartCoroutine != null)
+        {
+            StopCoroutine(_trailStartCoroutine);
+            _trailStartCoroutine = null;
+        }
     }
 
     private void FixedUpdate()
@@ -90,27 +121,49 @@ public class Bullet : MonoBehaviour
     public void Initialize(ObjectPool bulletPool, Transform firePoint, float velocity, Vector3 direction, int damage)
     {
         // Initialize all runtime values for the bullet
-        transform.position = firePoint.position;
+        _objectOnSphere.SetSphericalPosition(
+            SphericalCoordinatesUtils.CartesianToSpherical(firePoint.position));
         transform.rotation = firePoint.rotation;
         _damage = damage;
         _bulletPool = bulletPool;
         _objectOnSphere.SetVelocity(direction * velocity);
-        _previousCenter = transform.position;
-        _trailRenderer.Clear();
-        _trailRenderer.emitting = true;
-        _sphereCollider.enabled = true;
-        _initialized = true;
-    }
 
-    private void OnDisable()
-    {
+        // Disable collider until ready
+        _sphereCollider.enabled = true;
+
+        // Ensure trail cleared now and schedule emission after first physics step to avoid initial artifacts
+        if (_trailRenderer != null)
+        {
+            _trailRenderer.Clear();
+            _trailRenderer.emitting = false;
+        }
+
+        // Cancel any previous coroutine and start a fresh one to enable trail after one FixedUpdate
+        if (_trailStartCoroutine != null)
+            StopCoroutine(_trailStartCoroutine);
+
+        _trailStartCoroutine = StartCoroutine(EnableTrailNextFixedUpdate());
+
+        // Mark not initialized until the coroutine finishes and sets _initialized = true
         _initialized = false;
     }
 
-    private void OnEnable()
+    private IEnumerator EnableTrailNextFixedUpdate()
     {
-        _trailRenderer.emitting = false;
-        _trailRenderer.Clear();
-    }
+        // Wait one physics step so transform/rigidbody settle
+        yield return new WaitForFixedUpdate();
 
+        // Set previous center to current position so sweep tests start from here
+        _previousCenter = transform.position;
+
+        // Clear again to be safe, then enable emitting
+        if (_trailRenderer != null)
+        {
+            _trailRenderer.Clear();
+            _trailRenderer.emitting = true;
+        }
+
+        _initialized = true;
+        _trailStartCoroutine = null;
+    }
 }

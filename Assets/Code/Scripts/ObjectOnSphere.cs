@@ -50,19 +50,7 @@ public class ObjectOnSphere : MonoBehaviour
     {
         // Constrain position and velocity to sphere
         ConstrainToSphere();
-        // Update spherical coordinates based on the current position
-        _sphericalCoord = SphericalCoordinatesUtils.CartesianToSpherical(transform.position);
-        
-        // Compute radial, azimuthal and surfacedown directions
-        _azimuthDir = new Vector3(-Mathf.Sin(_sphericalCoord.y), 0, Mathf.Cos(_sphericalCoord.y)).normalized;
-        _radialDir = transform.position.normalized;
-        _surfaceDownDir = Vector3.ProjectOnPlane(Vector3.down, _radialDir).normalized;
-
-        // Ensure minimum gravity near pole
-        if (_surfaceDownDir.magnitude < 1e-6f)
-        {
-            _surfaceDownDir = Vector3.Cross(_azimuthDir, _radialDir).normalized;
-        }
+        UpdateSphereDirections();
 
         // Apply gravity force
         if (_useGravity)
@@ -74,24 +62,43 @@ public class ObjectOnSphere : MonoBehaviour
     protected void ConstrainToSphere()
     {
         // Constrain position to sphere
-        Vector3 dir = transform.position.normalized;
-        transform.position = dir * Radius;
+        Vector3 dir = Rig.position.normalized;
+        Rig.position = dir * Radius;
         // Constrain velocity to sphere
-        Rig.velocity = Vector3.ProjectOnPlane(Rig.velocity, Rig.position.normalized);
+        Rig.velocity = Vector3.ProjectOnPlane(Rig.velocity, dir);
     }
 
     public void SetSphericalPosition(Vector3 sphericalCoord)
     {
         // Set the position based on spherical coordinates
         _sphericalCoord = sphericalCoord;
-        transform.position = SphericalCoordinatesUtils.SphericalToCartesian(_sphericalCoord);
+        Rig.position = SphericalCoordinatesUtils.SphericalToCartesian(_sphericalCoord);
         ConstrainToSphere();
+        UpdateSphereDirections();
+    }
+
+    private void UpdateSphereDirections()
+    {
+        // Update spherical coordinates based on the current position
+        _sphericalCoord = SphericalCoordinatesUtils.CartesianToSpherical(Rig.position);
+        
+        // Compute radial, azimuthal and surfacedown directions
+        _azimuthDir = new Vector3(-Mathf.Sin(_sphericalCoord.y), 0, Mathf.Cos(_sphericalCoord.y)).normalized;
+        _radialDir = Rig.position.normalized;
+        _surfaceDownDir = Vector3.ProjectOnPlane(Vector3.down, _radialDir).normalized;
+
+        // Ensure minimum gravity near pole
+        if (_surfaceDownDir.magnitude < 1e-6f)
+        {
+            _surfaceDownDir = Vector3.Cross(_azimuthDir, _radialDir).normalized;
+        }
+
     }
 
     public void SetVelocity(Vector3 velocity)
     {
         // Set the velocity while constraining it to the sphere, reset angular velocity to zero
         Rig.angularVelocity = Vector3.zero;
-        Rig.velocity = Vector3.ProjectOnPlane(velocity, transform.position.normalized);
+        Rig.velocity = Vector3.ProjectOnPlane(velocity, Rig.position.normalized);
     }
 }
