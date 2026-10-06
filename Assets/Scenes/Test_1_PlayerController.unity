@@ -634,6 +634,7 @@ MonoBehaviour:
   BulletSpeed: 0
   BulletSize: 0
   FireRate: 4
+  ReloadTime: 0
   CanFire: 0
   IsAutomatic: 0
   _firePoint: {fileID: 1771416757}
@@ -1075,11 +1076,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Damage: 0
-  CurrentAmmo: 100
-  MaxAmmo: 100
+  CurrentAmmo: 8
+  MaxAmmo: 8
   BulletSpeed: 50
   BulletSize: 0
   FireRate: 10
+  ReloadTime: 2
   CanFire: 0
   IsAutomatic: 0
   _firePoint: {fileID: 12047273}
@@ -1396,6 +1398,7 @@ MonoBehaviour:
   BulletSpeed: 0
   BulletSize: 0
   FireRate: 4
+  ReloadTime: 0
   CanFire: 0
   IsAutomatic: 0
   _firePoint: {fileID: 1454931978}

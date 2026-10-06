@@ -28,10 +28,12 @@ public class WeaponController : MonoBehaviour
         if (gamepad != null)
         {
             rt = gamepad.rightTrigger.ReadValue();
+            
         }
 
         bool rightTriggerPressedThisFrame = rt > TRIGGER_THRESHOLD && _prevRightTrigger <= TRIGGER_THRESHOLD;
         _lastRequestedFireTime = rightTriggerPressedThisFrame ? Time.time : _lastRequestedFireTime;
+        
 
         if (_weapons != null && _weapons.Count > 0)
         {
@@ -46,6 +48,11 @@ public class WeaponController : MonoBehaviour
                 {
                     weapon.Fire(_aimController.AimDirection);
                     _lastRequestedFireTime = -Mathf.Infinity; // Reset after firing
+                }
+
+                if (gamepad != null && gamepad.rightShoulder.wasPressedThisFrame)
+                {
+                    weapon.Reload();
                 }
             }
         }
