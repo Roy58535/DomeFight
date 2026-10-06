@@ -433,6 +433,7 @@ MonoBehaviour:
   _currWeaponIdx: 0
   _defaultWeaponIdx: 0
   _aimController: {fileID: 293352740}
+  _fireBuffer: 0.15
 --- !u!114 &293352739
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -634,6 +635,7 @@ MonoBehaviour:
   BulletSize: 0
   FireRate: 4
   CanFire: 0
+  IsAutomatic: 0
   _firePoint: {fileID: 1771416757}
   _bulletPool: {fileID: 0}
 --- !u!4 &339144310
@@ -1079,6 +1081,7 @@ MonoBehaviour:
   BulletSize: 0
   FireRate: 10
   CanFire: 0
+  IsAutomatic: 0
   _firePoint: {fileID: 12047273}
   _bulletPool: {fileID: 1037018397}
 --- !u!1 &832575517
@@ -1394,6 +1397,7 @@ MonoBehaviour:
   BulletSize: 0
   FireRate: 4
   CanFire: 0
+  IsAutomatic: 0
   _firePoint: {fileID: 1454931978}
   _bulletPool: {fileID: 0}
 --- !u!1 &1179062012

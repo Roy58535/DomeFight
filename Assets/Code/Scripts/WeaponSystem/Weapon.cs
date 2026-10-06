@@ -9,6 +9,7 @@ public class Weapon : MonoBehaviour
     public float BulletSize;
     public float FireRate; // RPS
     public bool CanFire;
+    public bool IsAutomatic;
 
     [SerializeField] private Transform _firePoint;
     [SerializeField] private ObjectPool _bulletPool;

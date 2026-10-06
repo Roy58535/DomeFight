@@ -8,13 +8,14 @@ public class WeaponController : MonoBehaviour
     [SerializeField] private int _currWeaponIdx;
     [SerializeField] private int _defaultWeaponIdx;
     [SerializeField] private AimController _aimController;
+    [SerializeField] private float _fireBuffer = 0.15f; // Buffer time for semi-auto firing
 
-    private float _shootingAngle;
-    private ObjectOnSphere _objectOnSphere;
+    private const float TRIGGER_THRESHOLD = 0.5f; // Threshold for trigger input
+    private float _prevRightTrigger = 0f; // Previous frame's right trigger 
+    private float _lastRequestedFireTime = -Mathf.Infinity; // Time of the last fire request
 
     private void Start()
     {
-        _objectOnSphere = GetComponent<PlayerMovement>();
         // Switch to default weapon at start
         SwitchToWeapon(_defaultWeaponIdx);
     }
@@ -23,31 +24,28 @@ public class WeaponController : MonoBehaviour
     {
         Gamepad gamepad = Gamepad.current;
         float rt = 0f;
-        Vector2 rightStick = Vector2.zero;
-        Vector2 leftStick = Vector2.zero;
 
         if (gamepad != null)
         {
             rt = gamepad.rightTrigger.ReadValue();
-            rightStick = gamepad.rightStick.ReadValue();
-            leftStick = gamepad.leftStick.ReadValue();
         }
 
-        rightStick.Normalize();
-        leftStick.Normalize();
+        bool rightTriggerPressedThisFrame = rt > TRIGGER_THRESHOLD && _prevRightTrigger <= TRIGGER_THRESHOLD;
+        _lastRequestedFireTime = rightTriggerPressedThisFrame ? Time.time : _lastRequestedFireTime;
 
-        _shootingAngle = Mathf.Atan2(rightStick.y, rightStick.x);
-
-        if (rt > 0.5f)
+        if (_weapons != null && _weapons.Count > 0)
         {
-            if (_weapons != null && _weapons.Count > 0)
+            Weapon weapon = _weapons[_currWeaponIdx];
+            if (weapon != null)
             {
-                Weapon weapon = _weapons[_currWeaponIdx];
-                if (weapon != null)
+                if (weapon.IsAutomatic && rt > TRIGGER_THRESHOLD)
                 {
-                    // Calculate the firing direction based on right stick angle
-                    Vector3 fireDir = -rightStick.x * _objectOnSphere.AzimuthDir + rightStick.y * -_objectOnSphere.SurfaceDownDir;
                     weapon.Fire(_aimController.AimDirection);
+                }
+                else if (Time.time - _lastRequestedFireTime <= _fireBuffer && weapon.CanFire)
+                {
+                    weapon.Fire(_aimController.AimDirection);
+                    _lastRequestedFireTime = -Mathf.Infinity; // Reset after firing
                 }
             }
         }
@@ -61,6 +59,8 @@ public class WeaponController : MonoBehaviour
                 SwitchToWeapon(nextIndex);
             }
         }
+
+        _prevRightTrigger = rt; // Update previous trigger value for next frame
     }
 
     private void SwitchToWeapon(int index)
