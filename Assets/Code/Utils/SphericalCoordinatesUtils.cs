@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public static class SphericalCoordinatesUtils
+public class SphericalCoordinatesUtils : ScriptableObject
 {
     public static Vector3 SphericalToCartesian(Vector3 sphericalInput)
     {

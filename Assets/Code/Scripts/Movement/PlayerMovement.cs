@@ -12,6 +12,7 @@ public class PlayerMovement : ObjectOnSphere
     [SerializeField] private float _stickDeadzone = 0.15f;
 
     private CapsuleCollider _capsuleCollider;
+    private PlayerControls _playerControls;
     private float _hmove;
     private bool _jumpPending = false;
     private bool _isGrounded = false;
@@ -21,6 +22,7 @@ public class PlayerMovement : ObjectOnSphere
     {
         base.Awake();
         _capsuleCollider = GetComponent<CapsuleCollider>();
+        _playerControls = GetComponent<PlayerControls>();
     }
 
     protected override void Update()
@@ -31,13 +33,11 @@ public class PlayerMovement : ObjectOnSphere
             _jumpTimer -= Time.deltaTime;
         }
 
-        // Read gamepad once and reuse
-        Gamepad gamepad = Gamepad.current;
-
         Vector2 leftStick = Vector2.zero;
-        if (gamepad != null)
+        if (_playerControls != null)
         {
-            leftStick = gamepad.leftStick.ReadValue();
+            leftStick = _playerControls.Move;
+            print(leftStick);
         }
 
         // Apply deadzone and speed
@@ -50,7 +50,7 @@ public class PlayerMovement : ObjectOnSphere
         Debug.DrawRay(checkingPosition, SurfaceDownDir * 0.1f, _isGrounded ? Color.green : Color.red);
 
         // Jump input
-        if (gamepad != null && gamepad.buttonSouth.wasPressedThisFrame)
+        if (_playerControls != null && _playerControls.JumpPressed)
         {
             _jumpTimer = 0.15f;
         }

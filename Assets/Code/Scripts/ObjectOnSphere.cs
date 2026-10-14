@@ -7,7 +7,7 @@ public class ObjectOnSphere : MonoBehaviour
     public static float Radius = 10f;
 
     [SerializeField] private bool _useGravity = false;
-    [SerializeField] private Vector3 _sphericalCoord;
+    [SerializeField] private Vector3 _sphericalCoord; // 
     [SerializeField] private Vector3 _initialCoord;
     [SerializeField] private bool _useInitialCoord = false;
     public Vector3 SphericalCoord => _sphericalCoord;

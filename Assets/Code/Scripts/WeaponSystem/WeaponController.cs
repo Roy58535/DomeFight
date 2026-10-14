@@ -7,32 +7,25 @@ public class WeaponController : MonoBehaviour
     [SerializeField] private List<Weapon> _weapons;
     [SerializeField] private int _currWeaponIdx;
     [SerializeField] private int _defaultWeaponIdx;
-    [SerializeField] private AimController _aimController;
     [SerializeField] private float _fireBuffer = 0.15f; // Buffer time for semi-auto firing
 
-    private const float TRIGGER_THRESHOLD = 0.5f; // Threshold for trigger input
-    private float _prevRightTrigger = 0f; // Previous frame's right trigger 
+    //private const float TRIGGER_THRESHOLD = 0.5f; // Threshold for trigger input
+    //private float _prevRightTrigger = 0f; // Previous frame's right trigger 
     private float _lastRequestedFireTime = -Mathf.Infinity; // Time of the last fire request
+    private PlayerControls _playerControls;
+    private AimController _aimController;
 
     private void Start()
     {
+        _playerControls = GetComponent<PlayerControls>();
+        _aimController = GetComponent<AimController>();
         // Switch to default weapon at start
         SwitchToWeapon(_defaultWeaponIdx);
     }
 
     private void Update()
     {
-        Gamepad gamepad = Gamepad.current;
-        float rt = 0f;
-
-        if (gamepad != null)
-        {
-            rt = gamepad.rightTrigger.ReadValue();
-            
-        }
-
-        bool rightTriggerPressedThisFrame = rt > TRIGGER_THRESHOLD && _prevRightTrigger <= TRIGGER_THRESHOLD;
-        _lastRequestedFireTime = rightTriggerPressedThisFrame ? Time.time : _lastRequestedFireTime;
+        _lastRequestedFireTime = _playerControls.FirePressed ? Time.time : _lastRequestedFireTime;
         
 
         if (_weapons != null && _weapons.Count > 0)
@@ -40,17 +33,18 @@ public class WeaponController : MonoBehaviour
             Weapon weapon = _weapons[_currWeaponIdx];
             if (weapon != null)
             {
-                if (weapon.IsAutomatic && rt > TRIGGER_THRESHOLD)
+                if (weapon.IsAutomatic && _playerControls.FireHeld)
                 {
                     weapon.Fire(_aimController.AimDirection);
                 }
                 else if (Time.time - _lastRequestedFireTime <= _fireBuffer && weapon.CanFire)
                 {
+                    print(weapon.name + " fired at " + Time.time);
                     weapon.Fire(_aimController.AimDirection);
                     _lastRequestedFireTime = -Mathf.Infinity; // Reset after firing
                 }
 
-                if (gamepad != null && gamepad.rightShoulder.wasPressedThisFrame)
+                if (_playerControls != null && _playerControls.ReloadPressed)
                 {
                     weapon.Reload();
                 }
@@ -58,7 +52,7 @@ public class WeaponController : MonoBehaviour
         }
 
         // Cycle weapons with Left Bumper (LB)
-        if (gamepad != null && gamepad.leftShoulder.wasPressedThisFrame)
+        if (_playerControls != null && _playerControls.CycleWeaponPressed)
         {
             if (_weapons != null && _weapons.Count > 0)
             {
@@ -66,8 +60,6 @@ public class WeaponController : MonoBehaviour
                 SwitchToWeapon(nextIndex);
             }
         }
-
-        _prevRightTrigger = rt; // Update previous trigger value for next frame
     }
 
     private void SwitchToWeapon(int index)

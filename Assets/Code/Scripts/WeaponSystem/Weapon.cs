@@ -15,8 +15,7 @@ public class Weapon : MonoBehaviour
     public bool CanReload => _canReload;
 
     [SerializeField] private Transform _firePoint;
-    [SerializeField] private ObjectPool _bulletPool;
-
+    private ObjectPool _bulletPool;
 
     private bool _canFire;
     private bool _canReload;
@@ -39,6 +38,11 @@ public class Weapon : MonoBehaviour
         // Update firing state based on ammo, reload status, and fire rate
         _canFire = !_isReloading && CurrentAmmo > 0 && Time.time - _lastFireTime >= 1 / FireRate;
         _canReload = !_isReloading && CurrentAmmo < MaxAmmo;
+    }
+    
+    public void Initialize(ObjectPool bulletPool)
+    {
+        _bulletPool = bulletPool;
     }
 
     public void Fire(Vector3 dir)

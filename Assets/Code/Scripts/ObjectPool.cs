@@ -8,7 +8,7 @@ public class ObjectPool : MonoBehaviour
 
     public GameObject Get()
     {
-        if (_pool.Count > 5)
+        if (_pool.Count > 0)
         {
             // Dequeue an object from the pool and activate it
             GameObject obj = _pool.Dequeue();
@@ -18,7 +18,7 @@ public class ObjectPool : MonoBehaviour
         else
         {
             // If the pool is empty, instantiate a new object
-            GameObject newObject = Instantiate(Prefab);
+            GameObject newObject = Instantiate(Prefab, transform);
             return newObject;
         }
     }

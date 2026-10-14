@@ -11,20 +11,21 @@ public class AimController : MonoBehaviour
     [SerializeField] private float _eyeRotationRadius = 0.15f;
 
     private ObjectOnSphere _objectOnSphere;
-    
+    private PlayerControls _playerControls;
+
 
     private void Awake()
     {
         _objectOnSphere = GetComponent<ObjectOnSphere>();
+        _playerControls = GetComponent<PlayerControls>();
         AimDirection = -_objectOnSphere.AzimuthDir;
     }
 
     private void Update()
     {
-        Gamepad gamepad = Gamepad.current;
-        if (gamepad != null)
+        if (_playerControls != null)
         {
-            Vector2 rightStick = gamepad.rightStick.ReadValue();
+            Vector2 rightStick = _playerControls.Aim;
             Vector2 rightStickDir = rightStick.normalized;
             float zDir = rightStickDir.y * -90f;
             float yDir = rightStickDir.x > 0f ? 180f : 0f;
