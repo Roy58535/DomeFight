@@ -23,11 +23,6 @@ public class PlayerControls : MonoBehaviour
         _cycleWeapon = actions.FindAction("Gameplay/CycleWeapon", true);
     }
 
-    private void Update()
-    {
-        //print(Move);
-    }
-
     public Vector2 Move => _move?.ReadValue<Vector2>() ?? Vector2.zero;
 
     public Vector2 Aim => _aim?.ReadValue<Vector2>() ?? Vector2.zero;

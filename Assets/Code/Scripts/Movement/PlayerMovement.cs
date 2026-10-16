@@ -37,7 +37,6 @@ public class PlayerMovement : ObjectOnSphere
         if (_playerControls != null)
         {
             leftStick = _playerControls.Move;
-            print(leftStick);
         }
 
         // Apply deadzone and speed
@@ -47,7 +46,7 @@ public class PlayerMovement : ObjectOnSphere
         // Ground check
         Vector3 checkingPosition = transform.position + SurfaceDownDir * _capsuleCollider.height * transform.localScale.y / 2;
         _isGrounded = Physics.Raycast(checkingPosition, SurfaceDownDir, 0.1f, LayerMask.GetMask("Ground"));
-        Debug.DrawRay(checkingPosition, SurfaceDownDir * 0.1f, _isGrounded ? Color.green : Color.red);
+        //Debug.DrawRay(checkingPosition, SurfaceDownDir * 0.1f, _isGrounded ? Color.green : Color.red);
 
         // Jump input
         if (_playerControls != null && _playerControls.JumpPressed)

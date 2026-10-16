@@ -287,7 +287,6 @@ MonoBehaviour:
   ReloadTime: 0
   IsAutomatic: 0
   _firePoint: {fileID: 7236629316106662248}
-  _bulletPool: {fileID: 0}
 --- !u!1 &2590477455202600176
 GameObject:
   m_ObjectHideFlags: 0
@@ -1270,7 +1269,6 @@ MonoBehaviour:
   ReloadTime: 0
   IsAutomatic: 0
   _firePoint: {fileID: 6432976971850906395}
-  _bulletPool: {fileID: 0}
 --- !u!1 &8500414883016936113
 GameObject:
   m_ObjectHideFlags: 0
@@ -1400,7 +1398,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3eb498b258082a24da9832eddb2b6766, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Damage: 0
+  Damage: 10
   CurrentAmmo: 8
   MaxAmmo: 8
   BulletSpeed: 50
@@ -1409,4 +1407,3 @@ MonoBehaviour:
   ReloadTime: 2
   IsAutomatic: 0
   _firePoint: {fileID: 1441721097386862406}
-  _bulletPool: {fileID: 0}
