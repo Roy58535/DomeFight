@@ -16,6 +16,7 @@ public class PlayerMovement : ObjectOnSphere
     private float _hmove;
     private bool _jumpPending = false;
     private bool _isGrounded = false;
+    private bool _isDead = false;
     private float _jumpTimer = 0;
 
     protected override void Awake()
@@ -23,11 +24,20 @@ public class PlayerMovement : ObjectOnSphere
         base.Awake();
         _capsuleCollider = GetComponent<CapsuleCollider>();
         _playerControls = GetComponent<PlayerControls>();
+        _isDead = false;
+    }
+    
+    public void ProhibitMovement()
+    {
+        _isDead = true;
     }
 
     protected override void Update()
     {
         base.Update();
+        if (_isDead)
+            return;
+
         if (_jumpTimer > 0)
         {
             _jumpTimer -= Time.deltaTime;
@@ -64,6 +74,9 @@ public class PlayerMovement : ObjectOnSphere
     protected override void FixedUpdate()
     {
         base.FixedUpdate();
+        if (_isDead)
+            return;
+
         ApplyHorizontalMovement();
 
         // Apply jump force

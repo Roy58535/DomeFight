@@ -15,5 +15,9 @@ public class PlayerJoinSetup : MonoBehaviour
         }
 
         _roundManager.AddPlayer(player.gameObject);
+        if (!_roundManager.IsRoundActive)
+        {
+            _roundManager.StartRound();
+        }
     }
 }
