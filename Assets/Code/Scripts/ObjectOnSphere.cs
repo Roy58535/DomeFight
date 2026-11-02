@@ -24,6 +24,16 @@ public class ObjectOnSphere : MonoBehaviour
 
     protected virtual void Awake()
     {
+        InitializeBody();
+    }
+
+    private void InitializeBody()
+    {
+        // PlayerInput may notify the spawner before this component's Awake.
+        // Do not overwrite a spawn position when Awake subsequently runs.
+        if (_rig != null)
+            return;
+
         _rig = GetComponent<Rigidbody>();
 
         // Calculate initial spherical coordinates based on the initial position or use the provided initial coordinates
@@ -70,6 +80,7 @@ public class ObjectOnSphere : MonoBehaviour
 
     public void SetSphericalPosition(Vector3 sphericalCoord)
     {
+        InitializeBody();
         // Set the position based on spherical coordinates
         _sphericalCoord = sphericalCoord;
         Rig.position = SphericalCoordinatesUtils.SphericalToCartesian(_sphericalCoord);
