@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _entries:
   - Name: Pink
-    Color: {r: 0.9607843, g: 0.43137255, b: 0.7764706, a: 0}
+    Color: {r: 0.9607843, g: 0.43137255, b: 0.7764706, a: 1}
   - Name: Cyan
-    Color: {r: 0.2028302, g: 0.8860979, b: 1, a: 0}
+    Color: {r: 0.2028302, g: 0.8860979, b: 1, a: 1}
   - Name: Orange
-    Color: {r: 1, g: 0.61990947, b: 0.20392156, a: 0}
+    Color: {r: 1, g: 0.61990947, b: 0.20392156, a: 1}
   - Name: Green
-    Color: {r: 0.53804994, g: 1, b: 0.20392156, a: 0}
+    Color: {r: 0.53804994, g: 1, b: 0.20392156, a: 1}

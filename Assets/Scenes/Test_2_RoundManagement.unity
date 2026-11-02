@@ -214,6 +214,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _bulletPool: {fileID: 1037018397}
   _roundManager: {fileID: 1216957418}
+  _colorPalette: {fileID: 11400000, guid: 506f6b81f7b34ae44ba9fcdcadb79a1a, type: 2}
 --- !u!1 &264752650
 GameObject:
   m_ObjectHideFlags: 0

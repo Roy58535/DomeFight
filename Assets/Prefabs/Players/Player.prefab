@@ -278,15 +278,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3eb498b258082a24da9832eddb2b6766, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Damage: 0
+  Damage: 10
   CurrentAmmo: 8
   MaxAmmo: 8
-  BulletSpeed: 0
+  BulletSpeed: 50
   BulletSize: 0
-  FireRate: 4
-  ReloadTime: 0
+  FireRate: 10
+  ReloadTime: 2
   IsAutomatic: 0
-  _firePoint: {fileID: 7236629316106662248}
+  _firePoint: {fileID: 1441721097386862406}
 --- !u!1 &2590477455202600176
 GameObject:
   m_ObjectHideFlags: 0
@@ -648,6 +648,7 @@ GameObject:
   - component: {fileID: 9026175680107976070}
   - component: {fileID: 8008084855087876171}
   - component: {fileID: 1922782907704323041}
+  - component: {fileID: 7786489293011170021}
   m_Layer: 0
   m_Name: Player
   m_TagString: Entity
@@ -1261,15 +1262,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3eb498b258082a24da9832eddb2b6766, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Damage: 0
+  Damage: 10
   CurrentAmmo: 8
   MaxAmmo: 8
-  BulletSpeed: 0
+  BulletSpeed: 50
   BulletSize: 0
-  FireRate: 4
-  ReloadTime: 0
+  FireRate: 10
+  ReloadTime: 2
   IsAutomatic: 0
-  _firePoint: {fileID: 6432976971850906395}
+  _firePoint: {fileID: 1441721097386862406}
 --- !u!1 &8500414883016936113
 GameObject:
   m_ObjectHideFlags: 0
@@ -1408,3 +1409,16 @@ MonoBehaviour:
   ReloadTime: 2
   IsAutomatic: 0
   _firePoint: {fileID: 1441721097386862406}
+--- !u!114 &7786489293011170021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5640973765670075156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eed977148cc94bbfba80bf0ee564a82e, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _bodyRenderer: {fileID: 2397928732275934304}

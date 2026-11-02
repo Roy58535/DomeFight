@@ -37,6 +37,7 @@ public class RoundManager : MonoBehaviour
         if (!_activePlayers.Contains(player))
         {
             _activePlayers.Add(player);
+            _playerScores[player] = 0; // Initialize score for the player
             EntityInfo entityInfo = player.GetComponent<EntityInfo>();
             if (entityInfo != null)
             {
