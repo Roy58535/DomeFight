@@ -13,12 +13,10 @@ public class WeaponController : MonoBehaviour
     //private float _prevRightTrigger = 0f; // Previous frame's right trigger 
     private float _lastRequestedFireTime = -Mathf.Infinity; // Time of the last fire request
     private PlayerControls _playerControls;
-    private AimController _aimController;
 
     private void Start()
     {
         _playerControls = GetComponent<PlayerControls>();
-        _aimController = GetComponent<AimController>();
         // Switch to default weapon at start
         SwitchToWeapon(_defaultWeaponIdx);
     }
@@ -35,12 +33,12 @@ public class WeaponController : MonoBehaviour
             {
                 if (weapon.IsAutomatic && _playerControls.FireHeld)
                 {
-                    weapon.Fire(_aimController.AimDirection);
+                    weapon.Fire();
                 }
                 else if (Time.time - _lastRequestedFireTime <= _fireBuffer && weapon.CanFire)
                 {
                     print(weapon.name + " fired at " + Time.time);
-                    weapon.Fire(_aimController.AimDirection);
+                    weapon.Fire();
                     _lastRequestedFireTime = -Mathf.Infinity; // Reset after firing
                 }
 

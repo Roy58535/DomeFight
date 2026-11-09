@@ -45,7 +45,7 @@ public class Weapon : MonoBehaviour
         _bulletPool = bulletPool;
     }
 
-    public void Fire(Vector3 dir)
+    public void Fire()
     {
         if (CanFire)
         {
@@ -57,7 +57,8 @@ public class Weapon : MonoBehaviour
             Bullet bulletComponent = bullet.GetComponent<Bullet>();
             if (bulletComponent != null)
             {
-                bulletComponent.Initialize(_bulletPool, _firePoint, BulletSpeed, dir, Damage);
+                // Launch along the barrel; Bullet projects this direction onto the muzzle's tangent plane.
+                bulletComponent.Initialize(_bulletPool, _firePoint, BulletSpeed, _firePoint.forward, Damage);
             }
         }
     }
