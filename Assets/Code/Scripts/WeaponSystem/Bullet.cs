@@ -34,6 +34,9 @@ public class Bullet : MonoBehaviour
 
     // Active-shot state and reusable physics-query buffers.
     private bool _flying;
+    private bool _returnPending;
+    private float _returnTime;
+    private int _impactFrame;
     private Collider[] _overlaps = new Collider[16];
     private RaycastHit[] _hits = new RaycastHit[16];
 
@@ -62,6 +65,7 @@ public class Bullet : MonoBehaviour
 
         // Reset flight state and clear the trail when the bullet is activated.
         _flying = false;
+        _returnPending = false;
         _trail.Clear();
     }
 
@@ -69,6 +73,7 @@ public class Bullet : MonoBehaviour
     {
         // Stop flight, reset velocity, and clear the trail.
         _flying = false;
+        _returnPending = false;
         _velocity = Vector3.zero;
 
         if (_trail != null)
@@ -84,6 +89,7 @@ public class Bullet : MonoBehaviour
         CacheComponents();
         _pool = bulletPool;
         _flying = false;
+        _returnPending = false;
         _sphereRadius = ObjectOnSphere.Radius;
 
         if (_pool == null || firePoint == null || firePoint.position.sqrMagnitude < 0.000001f || _sphereRadius <= 0f)
@@ -128,6 +134,13 @@ public class Bullet : MonoBehaviour
         _flying = true;
         UpdateLaunchClearance();
         CheckOverlap();
+    }
+
+    private void Update()
+    {
+        // Return impacted bullets after their trail lifetime and at least one rendered frame.
+        if (_returnPending && Time.frameCount > _impactFrame && Time.time >= _returnTime)
+            Release();
     }
 
     private void FixedUpdate()
@@ -313,14 +326,18 @@ public class Bullet : MonoBehaviour
         }
         finally
         {
-            // Return the bullet to the pool after damage handling.
-            Release();
+            // Hold the bullet at impact while its existing trail points fade.
+            _velocity = Vector3.zero;
+            _returnPending = true;
+            _returnTime = Time.time + Mathf.Max(0.05f, _trail.time);
+            _impactFrame = Time.frameCount;
         }
     }
 
     private void Release()
     {
         // Reset velocity, stop emission, and clear the trail before returning to the pool.
+        _returnPending = false;
         _velocity = Vector3.zero;
         _trail.emitting = false;
         _trail.Clear();
