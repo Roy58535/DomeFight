@@ -55,6 +55,8 @@ MonoBehaviour:
   ReloadTime: 1.6
   IsAutomatic: 1
   _firePoint: {fileID: 8943877261792787172}
+  _pelletsPerShot: 1
+  _spreadHalfAngle: 0
 --- !u!1 &6183951954287333024
 GameObject:
   m_ObjectHideFlags: 0

@@ -15,6 +15,11 @@ public class Weapon : MonoBehaviour
     public bool CanReload => _canReload;
 
     [SerializeField] private Transform _firePoint;
+
+    // Number of projectiles per shot and angular spread within the sphere's tangent plane.
+    [SerializeField, Min(1)] private int _pelletsPerShot = 1;
+    [SerializeField, Range(0f, 90f)] private float _spreadHalfAngle = 0f;
+
     private ObjectPool _bulletPool;
 
     private bool _canFire;
@@ -47,18 +52,37 @@ public class Weapon : MonoBehaviour
 
     public void Fire()
     {
-        if (CanFire)
-        {
-            CurrentAmmo--;
-            _lastFireTime = Time.time;
+        // Validate the shot and project the barrel direction onto the muzzle's tangent plane.
+        if (!CanFire)
+            return;
 
-            // Get a bullet from the pool and initialize it
+        Vector3 normal = _firePoint.position.normalized;
+        Vector3 forward = Vector3.ProjectOnPlane(_firePoint.forward, normal).normalized;
+        if (forward.sqrMagnitude < 0.000001f)
+            return;
+
+        // Consume one round and start one cooldown for the complete pellet group.
+        CurrentAmmo--;
+        _lastFireTime = Time.time;
+        _canFire = false;
+
+        int pelletCount = Mathf.Max(1, _pelletsPerShot);
+        float halfAngle = Mathf.Clamp(_spreadHalfAngle, 0f, 90f);
+
+        for (int i = 0; i < pelletCount; i++)
+        {
+            // Place one pellet randomly in the spread.
+            float angle = halfAngle > 0f
+                ? Random.Range(-halfAngle, halfAngle)
+                : 0f;
+            Vector3 direction = Quaternion.AngleAxis(angle, normal) * forward;
+
+            // Launch each pellet through the existing bullet lifecycle and pool.
             GameObject bullet = _bulletPool.Get();
             Bullet bulletComponent = bullet.GetComponent<Bullet>();
             if (bulletComponent != null)
             {
-                // Launch along the barrel; Bullet projects this direction onto the muzzle's tangent plane.
-                bulletComponent.Initialize(_bulletPool, _firePoint, BulletSpeed, _firePoint.forward, Damage);
+                bulletComponent.Initialize(_bulletPool, _firePoint, BulletSpeed, direction, Damage);
             }
         }
     }
