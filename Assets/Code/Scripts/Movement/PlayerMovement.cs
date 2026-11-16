@@ -15,6 +15,7 @@ public class PlayerMovement : ObjectOnSphere
     private PlayerControls _playerControls;
     private float _hmove;
     private bool _jumpPending = false;
+    private bool _jumpConsumed = false;
     private bool _isGrounded = false;
     private bool _isDead = false;
     private float _jumpTimer = 0;
@@ -58,15 +59,22 @@ public class PlayerMovement : ObjectOnSphere
         _isGrounded = Physics.Raycast(checkingPosition, SurfaceDownDir, 0.1f, LayerMask.GetMask("Ground"));
         //Debug.DrawRay(checkingPosition, SurfaceDownDir * 0.1f, _isGrounded ? Color.green : Color.red);
 
+        // Allow another jump after the previous takeoff has cleared the ground probe.
+        if (!_isGrounded && !_jumpPending)
+        {
+            _jumpConsumed = false;
+        }
+
         // Jump input
         if (_playerControls != null && _playerControls.JumpPressed)
         {
             _jumpTimer = 0.15f;
         }
 
-        if (_isGrounded && _jumpTimer > 0)
+        if (_isGrounded && !_jumpConsumed && _jumpTimer > 0)
         {
             _jumpPending = true;
+            _jumpConsumed = true;
             _jumpTimer = 0;
         }
     }
@@ -79,10 +87,12 @@ public class PlayerMovement : ObjectOnSphere
 
         ApplyHorizontalMovement();
 
-        // Apply jump force
+        // Reach the same takeoff speed without carrying falling velocity into the jump.
         if (_jumpPending)
         {
-            Rig.AddForce(-SurfaceDownDir * _jumpForce, ForceMode.VelocityChange);
+            Vector3 jumpDirection = -SurfaceDownDir;
+            float upwardSpeed = Vector3.Dot(Rig.velocity, jumpDirection);
+            Rig.AddForce(jumpDirection * (_jumpForce - upwardSpeed), ForceMode.VelocityChange);
             _jumpPending = false;
         }
     }
