@@ -13,6 +13,10 @@ public class Weapon : MonoBehaviour
 
     public bool CanFire => _canFire;
     public bool CanReload => _canReload;
+    public bool IsReloading => _isReloading;
+    public float ReloadProgress => _isReloading
+        ? (ReloadTime > 0f ? Mathf.Clamp01(1f - _reloadTimer / ReloadTime) : 1f)
+        : 0f;
     public Transform FirePoint => _firePoint;
     public Bullet ProjectileTemplate { get; private set; }
 
@@ -97,6 +101,8 @@ public class Weapon : MonoBehaviour
         {
             _isReloading = true;
             _reloadTimer = ReloadTime;
+            _canFire = false;
+            _canReload = false;
         }
     }
 

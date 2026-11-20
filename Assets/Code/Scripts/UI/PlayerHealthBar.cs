@@ -4,7 +4,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(EntityInfo))]
 public class PlayerHealthBar : MonoBehaviour
 {
-    [SerializeField] private Canvas _canvas;
+    [SerializeField] private GameObject _barRoot;
     [SerializeField] private Image _fill;
     [SerializeField, Min(0f)] private float _visibleDuration = 3f;
 
@@ -15,7 +15,7 @@ public class PlayerHealthBar : MonoBehaviour
     {
         // Cache the health source and begin with the bar hidden.
         _health = GetComponent<EntityInfo>();
-        _canvas.enabled = false;
+        _barRoot.SetActive(false);
     }
 
     private void OnEnable()
@@ -27,7 +27,7 @@ public class PlayerHealthBar : MonoBehaviour
     private void OnDisable()
     {
         _health.OnHealthChanged -= ShowHealth;
-        _canvas.enabled = false;
+        _barRoot.SetActive(false);
     }
 
     private void ShowHealth(int current, int maximum)
@@ -36,18 +36,18 @@ public class PlayerHealthBar : MonoBehaviour
         float fraction = maximum > 0 ? Mathf.Clamp01((float)current / maximum) : 0f;
         _fill.rectTransform.localScale = new Vector3(fraction, 1f, 1f);
         _hideAt = Time.time + _visibleDuration;
-        _canvas.enabled = true;
+        _barRoot.SetActive(true);
     }
 
     private void LateUpdate()
     {
-        if (!_canvas.enabled)
+        if (!_barRoot.activeSelf)
             return;
 
         // Hide after the most recent health change has aged out.
         if (Time.time >= _hideAt)
         {
-            _canvas.enabled = false;
+            _barRoot.SetActive(false);
             return;
         }
     }
