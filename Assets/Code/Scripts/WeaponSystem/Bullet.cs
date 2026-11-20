@@ -40,6 +40,31 @@ public class Bullet : MonoBehaviour
     private Collider[] _overlaps = new Collider[16];
     private RaycastHit[] _hits = new RaycastHit[16];
 
+    public float Lifetime => Mathf.Max(0.01f, _maxLifetime);
+    public float SegmentLength => _maxSegmentLength;
+    public float Acceleration => _useGravity ? Mathf.Max(0f, _gravity) : 0f;
+    public LayerMask HitMask => _hitMask;
+    public QueryTriggerInteraction TriggerInteraction => _triggerInteraction;
+
+    public float CollisionRadius
+    {
+        get
+        {
+            Vector3 scale = transform.lossyScale;
+            return Mathf.Max(0.0001f, GetComponent<SphereCollider>().radius *
+                Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.z)));
+        }
+    }
+
+    public bool IsPredictionTarget(Collider other, EntityInfo shooter, bool clearedShooter)
+    {
+        // Apply the projectile's collision filters without modifying its flight state.
+        return other != null && other.GetComponentInParent<Bullet>() == null &&
+            (clearedShooter || shooter == null || other.GetComponentInParent<EntityInfo>() != shooter) &&
+            !Physics.GetIgnoreLayerCollision(gameObject.layer, other.gameObject.layer) &&
+            !Physics.GetIgnoreCollision(GetComponent<SphereCollider>(), other);
+    }
+
     private void Awake()
     {
         CacheComponents();
@@ -158,26 +183,15 @@ public class Bullet : MonoBehaviour
         // Divide the remaining flight time into short curved-path segments.
         float duration = Mathf.Min(deltaTime, _remainingLifetime);
         float acceleration = _useGravity ? Mathf.Max(0f, _gravity) : 0f;
-        float maxDistance = Mathf.Max(0.01f, Mathf.Min(_maxSegmentLength, _sphereRadius * 2f * Mathf.Deg2Rad));
-        int segments = Mathf.Max(1, Mathf.CeilToInt((_velocity.magnitude + acceleration * duration) * duration / maxDistance));
+        int segments = BulletTrajectory.SegmentCount(_velocity, acceleration, duration, _sphereRadius, _maxSegmentLength);
         float step = duration / segments;
 
         for (int i = 0; i < segments && _flying; i++)
         {
-            // Apply gravity along the sphere's downward tangent before advancing this substep.
-            Vector3 normal = _position / _sphereRadius;
-            Vector3 down = Vector3.ProjectOnPlane(Vector3.down, normal);
-
-            if (down.sqrMagnitude > 0.000001f)
-                _velocity += down.normalized * acceleration * step;
-
-            float speed = _velocity.magnitude;
-            if (speed > 0.000001f)
+            // Advance along the same spherical trajectory used by the aiming preview.
+            Vector3 next = BulletTrajectory.Advance(_position, ref _velocity, _sphereRadius, acceleration, step);
+            if (_velocity.magnitude > 0.000001f)
             {
-                // Calculate the next position by rotating along the sphere.
-                Vector3 axis = Vector3.Cross(normal, _velocity / speed).normalized;
-                Quaternion turn = Quaternion.AngleAxis(speed * step / _sphereRadius * Mathf.Rad2Deg, axis);
-                Vector3 next = (turn * normal).normalized * _sphereRadius;
                 Vector3 displacement = next - _position;
 
                 // Sweep to the next position and handle the first valid impact.
@@ -190,7 +204,6 @@ public class Bullet : MonoBehaviour
                 }
 
                 // Rotate velocity, move the bullet, and update launch clearance.
-                _velocity = turn * _velocity;
                 CommitPosition(next);
                 UpdateLaunchClearance();
             }
@@ -236,11 +249,7 @@ public class Bullet : MonoBehaviour
     private bool IsValidTarget(Collider other)
     {
         // Exclude projectile colliders, temporary launch protection, and explicitly ignored pairs.
-        return other != null && other != _sphereCollider &&
-            other.GetComponentInParent<Bullet>() == null &&
-            (_hasClearedShooter || _firingEntity == null || other.GetComponentInParent<EntityInfo>() != _firingEntity) &&
-            !Physics.GetIgnoreLayerCollision(gameObject.layer, other.gameObject.layer) &&
-            !Physics.GetIgnoreCollision(_sphereCollider, other);
+        return IsPredictionTarget(other, _firingEntity, _hasClearedShooter);
     }
 
     private bool CheckOverlap()

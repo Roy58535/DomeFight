@@ -14,6 +14,9 @@ public class WeaponController : MonoBehaviour
     private float _lastRequestedFireTime = -Mathf.Infinity; // Time of the last fire request
     private PlayerControls _playerControls;
 
+    public Weapon CurrentWeapon => _weapons != null && _currWeaponIdx >= 0 && _currWeaponIdx < _weapons.Count
+        ? _weapons[_currWeaponIdx] : null;
+
     private void Start()
     {
         _playerControls = GetComponent<PlayerControls>();

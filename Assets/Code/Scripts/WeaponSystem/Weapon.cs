@@ -13,6 +13,8 @@ public class Weapon : MonoBehaviour
 
     public bool CanFire => _canFire;
     public bool CanReload => _canReload;
+    public Transform FirePoint => _firePoint;
+    public Bullet ProjectileTemplate { get; private set; }
 
     [SerializeField] private Transform _firePoint;
 
@@ -48,6 +50,8 @@ public class Weapon : MonoBehaviour
     public void Initialize(ObjectPool bulletPool)
     {
         _bulletPool = bulletPool;
+        ProjectileTemplate = bulletPool != null && bulletPool.Prefab != null
+            ? bulletPool.Prefab.GetComponent<Bullet>() : null;
     }
 
     public void Fire()
